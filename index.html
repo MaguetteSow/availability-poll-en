@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Availability Poll</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .timezone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .timezone-option {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .timezone-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .timezone-option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .time-slot {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .time-slot:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .time-slot.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .results {
+            margin-top: 30px;
+        }
+
+        .availability-item {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .availability-item strong {
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .availability-item .timezone {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .availability-item .times {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .time-badge {
+            background: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+
+        .best-times {
+            background: #d4f4dd;
+            border-left: 4px solid #48bb78;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .best-times h3 {
+            color: #22543d;
+            margin-bottom: 10px;
+        }
+
+        .best-time-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .delete-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .delete-btn:hover {
+            background: #c53030;
+        }
+
+        .share-section {
+            background: #fff5e6;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .share-section h3 {
+            color: #92400e;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .share-link {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .copy-btn {
+            background: #f59e0b;
+            margin-top: 10px;
+            width: auto;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .copy-btn:hover {
+            background: #d97706;
+        }
+
+        .timezone-converter {
+            background: #f0f4ff;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .timezone-converter-title {
+            font-size: 13px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .timezone-row {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+            align-items: center;
+        }
+
+        .timezone-row:last-child {
+            border-bottom: none;
+        }
+
+        .timezone-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .timezone-times {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .converted-time {
+            background: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+
+        .converted-time.highlight {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .all-availabilities-view {
+            margin-top: 30px;
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .timeline-view {
+            margin-top: 20px;
+        }
+
+        .timeline-header {
+            display: grid;
+            grid-template-columns: 80px repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .timeline-row {
+            display: grid;
+            grid-template-columns: 80px repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 5px;
+            padding: 5px 0;
+        }
+
+        .timeline-time {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .timeline-cell {
+            font-size: 11px;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+            background: #f5f5f5;
+        }
+
+        .timeline-cell.available {
+            background: #d4f4dd;
+            color: #22543d;
+            font-weight: 600;
+        }
+
+        .timeline-cell.multiple {
+            background: #48bb78;
+            color: white;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 Availability Poll</h1>
+        <p class="subtitle">Coordinate your availability across Paris, Seattle, and Montreal</p>
+
+        <div class="section">
+            <div class="section-title">1. Your Information</div>
+            <div class="input-group">
+                <label>Your Name</label>
+                <input type="text" id="userName" placeholder="Enter your name">
+            </div>
+            <div class="input-group">
+                <label>Your Timezone</label>
+                <div class="timezone-grid">
+                    <div class="timezone-option" data-tz="Europe/Paris">
+                        🇫🇷 Paris<br><small>(UTC+1)</small>
+                    </div>
+                    <div class="timezone-option" data-tz="America/Los_Angeles">
+                        🇺🇸 Seattle<br><small>(UTC-8)</small>
+                    </div>
+                    <div class="timezone-option" data-tz="America/Montreal">
+                        🇨🇦 Montreal<br><small>(UTC-5)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">2. Select Your Availability (in your timezone)</div>
+            <div class="input-group">
+                <label>Date</label>
+                <input type="date" id="availabilityDate">
+            </div>
+            <div class="time-slots" id="timeSlots"></div>
+        </div>
+
+        <button onclick="addAvailability()">➕ Add My Availability</button>
+
+        <div class="results" id="results"></div>
+
+        <div class="share-section">
+            <h3>📤 How to Share This Poll</h3>
+            <p style="color: #92400e; font-size: 14px; margin-bottom: 10px;">
+                <strong>Option 1:</strong> Send this file directly to your friends via email or messaging app. They can open it in their browser.
+            </p>
+            <p style="color: #92400e; font-size: 14px;">
+                <strong>Option 2:</strong> Upload to a free hosting service like:
+            </p>
+            <ul style="color: #92400e; font-size: 14px; margin-left: 20px; margin-top: 5px;">
+                <li><strong>Netlify Drop:</strong> netlify.com/drop (drag & drop this file)</li>
+                <li><strong>GitHub Pages:</strong> Create a repo and upload this file</li>
+                <li><strong>Vercel:</strong> vercel.com (sign up and deploy)</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let availabilities = JSON.parse(localStorage.getItem('availabilities') || '[]');
+        let selectedTimezone = null;
+
+        // Initialize date to today
+        document.getElementById('availabilityDate').valueAsDate = new Date();
+
+        // Generate time slots
+        function generateTimeSlots() {
+            const container = document.getElementById('timeSlots');
+            container.innerHTML = '';
+            for (let hour = 0; hour < 24; hour++) {
+                for (let minute = 0; minute < 60; minute += 30) {
+                    const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                    const slot = document.createElement('div');
+                    slot.className = 'time-slot';
+                    slot.textContent = timeStr;
+                    slot.dataset.time = timeStr;
+                    slot.onclick = () => slot.classList.toggle('selected');
+                    container.appendChild(slot);
+                }
+            }
+        }
+
+        // Handle timezone selection
+        document.querySelectorAll('.timezone-option').forEach(option => {
+            option.onclick = function() {
+                document.querySelectorAll('.timezone-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedTimezone = this.dataset.tz;
+            };
+        });
+
+        function addAvailability() {
+            const name = document.getElementById('userName').value.trim();
+            const date = document.getElementById('availabilityDate').value;
+            const selectedTimes = Array.from(document.querySelectorAll('.time-slot.selected')).map(slot => slot.dataset.time);
+
+            if (!name) {
+                alert('Please enter your name');
+                return;
+            }
+            if (!selectedTimezone) {
+                alert('Please select your timezone');
+                return;
+            }
+            if (!date) {
+                alert('Please select a date');
+                return;
+            }
+            if (selectedTimes.length === 0) {
+                alert('Please select at least one time slot');
+                return;
+            }
+
+            availabilities.push({
+                name,
+                timezone: selectedTimezone,
+                date,
+                times: selectedTimes
+            });
+
+            // Save to localStorage
+            localStorage.setItem('availabilities', JSON.stringify(availabilities));
+
+            // Clear selections
+            document.querySelectorAll('.time-slot.selected').forEach(slot => slot.classList.remove('selected'));
+            
+            displayResults();
+        }
+
+        function deleteAvailability(index) {
+            availabilities.splice(index, 1);
+            localStorage.setItem('availabilities', JSON.stringify(availabilities));
+            displayResults();
+        }
+
+        function convertTimeToUTC(date, time, timezone) {
+            const [hours, minutes] = time.split(':').map(Number);
+            
+            // Offset approximations (simplified, doesn't account for DST perfectly)
+            const offsets = {
+                'Europe/Paris': 1,
+                'America/Los_Angeles': -8,
+                'America/Montreal': -5
+            };
+            
+            const utcHours = hours - offsets[timezone];
+            return utcHours * 60 + minutes; // Return minutes from midnight UTC
+        }
+
+        function findCommonTimes() {
+            if (availabilities.length < 2) return [];
+
+            // Convert all times to UTC minutes from midnight
+            const allTimesUTC = availabilities.map(avail => ({
+                name: avail.name,
+                times: avail.times.map(time => ({
+                    original: time,
+                    utc: convertTimeToUTC(avail.date, time, avail.timezone)
+                }))
+            }));
+
+            // Find overlapping times
+            const firstPersonTimes = new Set(allTimesUTC[0].times.map(t => t.utc));
+            const commonTimes = [];
+
+            for (const utcTime of firstPersonTimes) {
+                const isCommon = allTimesUTC.every(person => 
+                    person.times.some(t => Math.abs(t.utc - utcTime) < 30)
+                );
+                
+                if (isCommon) {
+                    commonTimes.push(utcTime);
+                }
+            }
+
+            return commonTimes.sort((a, b) => a - b).slice(0, 5);
+        }
+
+        function formatUTCTimeInTimezone(utcMinutes, timezone) {
+            const offsets = {
+                'Europe/Paris': 1,
+                'America/Los_Angeles': -8,
+                'America/Montreal': -5
+            };
+            
+            const totalMinutes = utcMinutes + (offsets[timezone] * 60);
+            let hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            
+            // Handle day wrap
+            if (hours < 0) hours += 24;
+            if (hours >= 24) hours -= 24;
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+
+        function convertTimeToTimezone(utcMinutes, timezone) {
+            const offsets = {
+                'Europe/Paris': 1,
+                'America/Los_Angeles': -8,
+                'America/Montreal': -5
+            };
+            
+            const totalMinutes = utcMinutes + (offsets[timezone] * 60);
+            let hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            
+            // Handle day wrap
+            let dayOffset = '';
+            if (hours < 0) {
+                hours += 24;
+                dayOffset = ' (prev day)';
+            }
+            if (hours >= 24) {
+                hours -= 24;
+                dayOffset = ' (next day)';
+            }
+            
+            return {
+                time: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
+                dayOffset: dayOffset
+            };
+        }
+
+        function getConvertedTimes(originalTime, fromTimezone) {
+            const utcMinutes = convertTimeToUTC('2024-01-01', originalTime, fromTimezone);
+            
+            return {
+                paris: convertTimeToTimezone(utcMinutes, 'Europe/Paris'),
+                seattle: convertTimeToTimezone(utcMinutes, 'America/Los_Angeles'),
+                montreal: convertTimeToTimezone(utcMinutes, 'America/Montreal')
+            };
+        }
+
+        function generateTimezoneComparison(times, fromTimezone) {
+            const timezones = [
+                { key: 'paris', label: '🇫🇷 Paris', tz: 'Europe/Paris' },
+                { key: 'seattle', label: '🇺🇸 Seattle', tz: 'America/Los_Angeles' },
+                { key: 'montreal', label: '🇨🇦 Montreal', tz: 'America/Montreal' }
+            ];
+
+            let html = '';
+            
+            timezones.forEach(({ key, label, tz }) => {
+                const convertedTimes = times.map(time => {
+                    const converted = getConvertedTimes(time, fromTimezone);
+                    return converted[key];
+                });
+
+                // Remove duplicates and sort
+                const uniqueTimes = [...new Set(convertedTimes.map(t => t.time))].sort();
+                
+                html += `
+                    <div class="timezone-row">
+                        <div class="timezone-label">${label}</div>
+                        <div class="timezone-times">
+                            ${uniqueTimes.map(time => {
+                                const hasOffset = convertedTimes.find(t => t.time === time)?.dayOffset || '';
+                                const isOriginal = tz === fromTimezone;
+                                return `<span class="converted-time ${isOriginal ? 'highlight' : ''}">${time}${hasOffset}</span>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            return html;
+        }
+
+        function displayResults() {
+            const resultsDiv = document.getElementById('results');
+            
+            if (availabilities.length === 0) {
+                resultsDiv.innerHTML = '';
+                return;
+            }
+
+            let html = '<div class="section-title">Recorded Availability</div>';
+            
+            availabilities.forEach((avail, index) => {
+                const tzNames = {
+                    'Europe/Paris': '🇫🇷 Paris',
+                    'America/Los_Angeles': '🇺🇸 Seattle',
+                    'America/Montreal': '🇨🇦 Montreal'
+                };
+                
+                html += `
+                    <div class="availability-item">
+                        <strong>${avail.name}</strong>
+                        <div class="timezone">${tzNames[avail.timezone]} • ${avail.date}</div>
+                        <div class="times">
+                            ${avail.times.map(time => `<span class="time-badge">${time}</span>`).join('')}
+                        </div>
+                        
+                        <div class="timezone-converter">
+                            <div class="timezone-converter-title">⏰ Corresponding times in all cities:</div>
+                            ${generateTimezoneComparison(avail.times, avail.timezone)}
+                        </div>
+                        
+                        <button class="delete-btn" onclick="deleteAvailability(${index})">Delete</button>
+                    </div>
+                `;
+            });
+
+            // Show best times if we have multiple people
+            if (availabilities.length >= 2) {
+                const commonTimes = findCommonTimes();
+                
+                if (commonTimes.length > 0) {
+                    html += `
+                        <div class="best-times">
+                            <h3>✨ Best Common Time Slots</h3>
+                            ${commonTimes.map(utcTime => `
+                                <div class="best-time-item">
+                                    🇫🇷 Paris: <strong>${formatUTCTimeInTimezone(utcTime, 'Europe/Paris')}</strong> • 
+                                    🇺🇸 Seattle: <strong>${formatUTCTimeInTimezone(utcTime, 'America/Los_Angeles')}</strong> • 
+                                    🇨🇦 Montreal: <strong>${formatUTCTimeInTimezone(utcTime, 'America/Montreal')}</strong>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="best-times" style="background: #fff5f5; border-left-color: #e53e3e;">
+                            <h3 style="color: #742a2a;">❌ No Common Time Slots Found</h3>
+                            <p style="color: #742a2a; font-size: 14px;">Try adding more time slots to your availability.</p>
+                        </div>
+                    `;
+                }
+            }
+
+            resultsDiv.innerHTML = html;
+        }
+
+        // Initialize time slots and display existing results on load
+        generateTimeSlots();
+        displayResults();
+    </script>
+</body>
+</html>
